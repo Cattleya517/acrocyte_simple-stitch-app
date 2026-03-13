@@ -1,0 +1,18 @@
+[project]
+name = "acrocyte-simple-stitch-app"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ashlar>=1.19.0",
+    "basicpy>=1.1.0",
+    "dask>=2026.1.2",
+    "numpy>=2.4.3",
+    "ome-zarr>=0.12.2",
+    "pandas>=3.0.1",
+    "setuptools<82",
+    "spatialdata>=0.7.0",
+    "tifffile>=2026.3.3",
+    "tqdm>=4.67.3",
+]

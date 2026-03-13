@@ -8,7 +8,7 @@ import spatialdata as sd
 import spatialdata.transformations as st
 import xml.etree.ElementTree as ET
 
-from _channelinfo import name_to_title, name_to_rank
+from ._channelinfo import name_to_title, name_to_rank
 
 
 
