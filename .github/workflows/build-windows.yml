@@ -43,6 +43,7 @@ jobs:
       - name: Copy ashlar-runner to build/bin
         shell: bash
         run: |
+          mkdir -p build/bin
           rm -rf build/bin/ashlar-runner
           cp -r dist/ashlar-runner build/bin/ashlar-runner
 
