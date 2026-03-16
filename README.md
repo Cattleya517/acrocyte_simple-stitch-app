@@ -6,17 +6,18 @@ A one-click desktop app for stitching microscopy tile images using [ashlar](http
 
 ### macOS
 
-1. Download `SimpleStitch.zip` from the latest release
-2. Unzip it — you'll get `Simple Stitch.app` and `install-mac.sh`
-3. Open Terminal, `cd` into the unzipped folder, and run:
+1. Go to [**Releases**](../../releases/latest) and download `Simple.Stitch-X.X.X-arm64-mac.zip`
+2. Double-click the zip to unzip — you'll get `Simple Stitch.app`
+3. Drag `Simple Stitch.app` into your **Applications** folder
+4. Open Terminal and run:
 
 ```bash
-bash install-mac.sh
+xattr -cr /Applications/Simple\ Stitch.app
 ```
 
-4. Open **Simple Stitch** from Applications
+5. Open **Simple Stitch** from Applications
 
-> The install script copies the app to `/Applications` and removes the macOS quarantine flag so it opens without warnings.
+> Step 4 removes the macOS quarantine flag (needed because the app is not signed with an Apple Developer certificate). You only need to do this once.
 
 ### Windows
 
@@ -35,10 +36,10 @@ bash install-mac.sh
 
 | Problem | Solution |
 |---------|----------|
-| macOS: "App is damaged" or blocked | Re-run `bash install-mac.sh` or run `xattr -cr /Applications/Simple\ Stitch.app` in Terminal |
+| macOS: "App is damaged" or blocked | Run `xattr -cr /Applications/Simple\ Stitch.app` in Terminal |
 | Windows SmartScreen warning | Click **More info** then **Run anyway** |
 | Stitching fails immediately | Make sure your folder contains valid TIFF tile images |
-| App won't open on macOS | Make sure you installed via the script, not by dragging from a DMG |
+| App won't open on macOS | Make sure you ran the `xattr -cr` command after dragging to Applications |
 
 ## For Developers
 
