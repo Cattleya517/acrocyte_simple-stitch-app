@@ -2,23 +2,36 @@
 runner.py — CLI wrapper for ashlar stitching, called by Electron.
 
 Usage:
-    python -m python.runner /path/to/tile/directory
+    python -m stitcher.runner /path/to/tile/directory
 
 Prints plain-text progress to stdout for Electron to stream.
 """
 
 import sys
+import types
+
+# Suppress Java/bioformats — not needed for TIFF stitching
+sys.modules['javabridge'] = types.ModuleType('javabridge')
+sys.modules['bioformats'] = types.ModuleType('bioformats')
+
+import os
+os.environ['MPLBACKEND'] = 'Agg'
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=UserWarning)
+
+# Flush stdout line-by-line so Electron receives live progress
+sys.stdout.reconfigure(line_buffering=True)
+
 from pathlib import Path
 from .ashlar_adapter import FileSeriesReader2
 from ashlar.reg import EdgeAligner, Mosaic, PyramidWriter
-import warnings
-warnings.filterwarnings("ignore", category=FutureWarning)
+
 
 def main():
-    # --- Step 1: Parse input directory from CLI args ---
     if len(sys.argv) < 2:
         print("ERROR: No input directory provided")
-        print("Usage: python -m python.runner /path/to/tile/directory")
+        print("Usage: python -m stitcher.runner /path/to/tile/directory")
         sys.exit(1)
 
     input_path = Path(sys.argv[1])
@@ -28,35 +41,18 @@ def main():
 
     print(f"Input directory: {input_path}")
 
-    # --- Step 2: Create reader, align, mosaic, and write ---
-    # TODO: You implement stitch() below
     output_path = input_path / f"{input_path.name}_stitched.ome.tif"
-    stitch(input_path, output_path)
+
+    try:
+        stitch(input_path, output_path)
+    except Exception as e:
+        print(f"ERROR: Stitching failed — {e}")
+        sys.exit(1)
 
     print(f"Done! Output saved to: {output_path}")
 
 
 def stitch(input_path, output_path):
-    """
-    Run the full ashlar stitching pipeline.
-
-    This function should:
-      1. Create a FileSeriesReader2 (the adapter that reads your MetaMorph TIFFs)
-      2. Run EdgeAligner (refines tile positions using cross-correlation)
-      3. Create a Mosaic (composites aligned tiles)
-      4. Write via PyramidWriter (outputs OME-TIFF)
-
-    Args:
-        input_path:  Path to directory containing MetaMorph TIFF tiles
-        output_path: Path for output OME-TIFF file
-
-    Hints:
-        - Look at python/ashlar_adapter.py:FileSeriesReader2 for step 1
-        - Look at ashlar/scripts/ashlar.py:process_single() for steps 2-4
-        - EdgeAligner(reader, channel=0, verbose=True).run()
-        - Mosaic(edge_aligner, shape=edge_aligner.mosaic_shape, verbose=True)
-        - PyramidWriter([mosaic], str(output_path), verbose=True).run()
-    """
     reader = FileSeriesReader2(input_path)
     edge_aligner = EdgeAligner(reader, channel=0, verbose=True)
     edge_aligner.run()

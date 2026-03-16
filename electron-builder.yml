@@ -9,6 +9,16 @@ files:
   - '!{.eslintcache,eslint.config.mjs,.prettierignore,.prettierrc.yaml,dev-app-update.yml,CHANGELOG.md,README.md}'
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
+  - '!.venv/**/*'
+  - '!stitcher/*'
+  - '!python/*'
+  - '!build/**/*'
+  - '!test_data/**/*'
+  - '!demo_nb.ipynb'
+  - '!stitch_entry.py'
+  - '!pyproject.toml'
+  - '!uv.lock'
+  - '!*.spec'
 extraResources:
   - from: build/bin/ashlar-runner
     to: ashlar-runner
