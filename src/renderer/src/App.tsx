@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 
 function App(): React.JSX.Element {
   const [folderPath, setFolderPath] = useState<string | null>(null)
-  const [version, setVersion] = useState<string>('0.1.0')
+
   const [logs, setLogs] = useState<string[]>([])
   const logsEndRef = useRef<HTMLDivElement>(null)
 
