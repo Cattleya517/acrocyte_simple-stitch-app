@@ -11,6 +11,8 @@ import sys
 from pathlib import Path
 from .ashlar_adapter import FileSeriesReader2
 from ashlar.reg import EdgeAligner, Mosaic, PyramidWriter
+import warnings
+warnings.filterwarnings("ignore", category=FutureWarning)
 
 def main():
     # --- Step 1: Parse input directory from CLI args ---
@@ -28,7 +30,7 @@ def main():
 
     # --- Step 2: Create reader, align, mosaic, and write ---
     # TODO: You implement stitch() below
-    output_path = input_path / "stitched.ome.tif"
+    output_path = input_path / f"{input_path.name}_stitched.ome.tif"
     stitch(input_path, output_path)
 
     print(f"Done! Output saved to: {output_path}")

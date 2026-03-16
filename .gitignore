@@ -6,3 +6,7 @@ out
 *.log*
 
 /test_data
+.venv
+__pycache__
+build/bin
+build/ashlar-runner

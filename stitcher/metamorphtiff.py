@@ -4,8 +4,6 @@ from tqdm import tqdm
 import numpy as np
 import pandas as pd
 import tifffile
-import spatialdata as sd
-import spatialdata.transformations as st
 import xml.etree.ElementTree as ET
 
 from ._channelinfo import name_to_title, name_to_rank
@@ -94,6 +92,8 @@ class MetaMorphTIFFHelper:
     #    c. this stays the same even if sdata was  backed by a zarr store!
     @staticmethod
     def to_spatialdata(df, chunks=(1, 1024, 1024), coordinate_systems=None, scale_factors=None):
+        import spatialdata as sd
+        import spatialdata.transformations as st
         # specify pixel sizes
         pixel_size = df.iloc[0]['pixel_size']    # in microns
         scale      = st.Scale(axes=["y", "x"], scale=[pixel_size, pixel_size])

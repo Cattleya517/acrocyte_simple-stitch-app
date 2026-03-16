@@ -1,12 +1,22 @@
-import { contextBridge } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 
-// Custom APIs for renderer
-const api = {}
+const api = {
+  selectDir: (): Promise<string | null> => ipcRenderer.invoke('select-dir'),
+  runAshlar: (tilePath: string): void => ipcRenderer.send('run-ashlar', tilePath),
+  cancelAshlar: (): void => ipcRenderer.send('cancel-ashlar'),
+  onAshlarLog: (callback: (line: string) => void): void => {
+    ipcRenderer.on('ashlar-log', (_event, line) => callback(line))
+  },
+  onAshlarDone: (callback: (code: number) => void): void => {
+    ipcRenderer.on('ashlar-done', (_event, code) => callback(code))
+  },
+  removeAshlarListeners: (): void => {
+    ipcRenderer.removeAllListeners('ashlar-log')
+    ipcRenderer.removeAllListeners('ashlar-done')
+  }
+}
 
-// Use `contextBridge` APIs to expose Electron APIs to
-// renderer only if context isolation is enabled, otherwise
-// just add to the DOM global.
 if (process.contextIsolated) {
   try {
     contextBridge.exposeInMainWorld('electron', electronAPI)

@@ -1,0 +1,74 @@
+name: Build Windows Installer
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install Python dependencies
+        run: uv sync --group dev
+
+      - name: Find ashlar jars path
+        id: ashlar-jars
+        shell: bash
+        run: |
+          JARS_PATH=$(uv run python -c "import ashlar, os; print(os.path.join(os.path.dirname(ashlar.__file__), 'jars'))")
+          echo "path=$JARS_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Build ashlar-runner with PyInstaller
+        run: >
+          uv run pyinstaller
+          --name ashlar-runner
+          --add-data "${{ steps.ashlar-jars.outputs.path }};ashlar/jars"
+          --console
+          --noconfirm
+          stitch_entry.py
+
+      - name: Copy ashlar-runner to build/bin
+        shell: bash
+        run: |
+          rm -rf build/bin/ashlar-runner
+          cp -r dist/ashlar-runner build/bin/ashlar-runner
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Build Electron app for Windows
+        run: npm run build && npx electron-builder --win
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-installer
+          path: dist/*.exe
+
+      - name: Upload to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
